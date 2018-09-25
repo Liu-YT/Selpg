@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
+//	"fmt"
 	"io"
-	"io/ioutil"
+//	"io/ioutil"
 	"bufio"
 	"os"
-	"os/exec"
+//	"os/exec"
 	"math"
 	"github.com/spf13/pflag"
 )
@@ -24,29 +24,28 @@ func main() {
 	var args selpg_args
 
 	// 定义并且获取参数
-	getArgs(args)
+	getArgs(&args)
 
 	// 检查参数合法性
-	checkArgs(args)
+	checkArgs(&args)
 
 	// 执行命令
-	processInput(args)
+	processInput(&args)
 }
 
 // 定义并且获取参数
 func getArgs(args *selpg_args) {
-	flag.IntVal(&(args.startPage), "s", "-1", "start page")
-	flag.IntVal(&(args.endPage), "e", "-1", "end page")
-	flag.IntVal(&(args.pageLen), "l", "72", "the length of page")
-	flag.BoolVar(&(args.pageType), "f", false, "page type")
-	flag.StringVar(&(args.outDestination), "d", "", "print destination")
-	flag.Parse()
+	pflag.IntVar(&(args.startPage), "s", -1, "start page")
+	pflag.IntVar(&(args.endPage), "e", -1, "end page")
+	pflag.IntVar(&(args.pageLen), "l", 72, "the length of page")
+	pflag.BoolVar(&(args.pageType), "f", false, "page type")
+	pflag.StringVar(&(args.outDestination), "d", "", "print destination")
+	pflag.Parse()
 
-	other := flag.Args()	// 其余参数
-	if(len(other) > 0) {
+	other := pflag.Args()	// 其余参数
+	if len(other) > 0 {
 		args.inFile = other[0]
-	}
-	else {
+	} else {
 		args.inFile = ""
 	}
 }
@@ -63,7 +62,7 @@ func checkArgs(args *selpg_args) {
 		os.Exit(0)
 	}
 
-	if args.endPage < 1 ||  args.endPage > math.MaxInt32 || args.endPage < startPage{
+	if args.endPage < 1 ||  args.endPage > math.MaxInt32 || args.endPage < args.startPage{
 		os.Stderr.Write([]byte("You should input valid end page\n"))
 		os.Exit(0)
 	}
@@ -82,12 +81,11 @@ func processInput(args *selpg_args) {
 
 	if args.inFile == "" {
 		reader = bufio.NewReader(os.Stdin)
-	} 
-	else {
+	}  else {
 		fileIn, err := os.Open(args.inFile)
 		defer fileIn.Close()
 		if err != nil {
-			os.Stderr.Write([]byte("Open file [%s] error\n", args.inFile))
+			os.Stderr.Write([]byte("Open file error\n"))
 			os.Exit(0)
 		}
 		reader = bufio.NewReader(fileIn)
@@ -97,8 +95,7 @@ func processInput(args *selpg_args) {
 	if args.outDestination == "" {
 		// 输出到当前命令行
 		outputCurrent(reader, args);
-	}
-	else {
+	} else {
 		// 输出到目的地
 		outputToDest(reader, args);
 	}
@@ -108,17 +105,16 @@ func processInput(args *selpg_args) {
 func outputCurrent(reader *bufio.Reader, args *selpg_args) {
 	writer := bufio.NewWriter(os.Stdout)
 
-	lineCtr = 0
-	pageCtr = 1
+	lineCtr := 0
+	pageCtr := 1
 	if args.pageType == true {
 		// -f page type
 		for {
 			char, errR := reader.ReadByte()
-			if err != nil {
+			if errR != nil {
 				if errR == io.EOF {
 					break
-				}
-				else {
+				} else {
 					os.Stderr.Write([]byte("Read byte from reader fail\n"))
 					os.Exit(0)
 				}
@@ -135,17 +131,15 @@ func outputCurrent(reader *bufio.Reader, args *selpg_args) {
 				pageCtr++
 			}
 		}
-	}
-	else {
+	} else {
 		// -lNumber page type
 		// page len is 72 or the number in -lNumber
 		for{
 			strLine, errR := reader.ReadString('\n')
-			if err != nil {
+			if errR != nil {
 				if errR == io.EOF {
 					break
-				}
-				else {
+				} else {
 					os.Stderr.Write([]byte("Read string line from reader fail\n"))
 					os.Exit(0)
 				}
@@ -154,7 +148,7 @@ func outputCurrent(reader *bufio.Reader, args *selpg_args) {
 			lineCtr++
 
 			if pageCtr >= args.startPage && pageCtr <= args.endPage {
-				errW := writer.Write(strLine)
+				_, errW := writer.Write(strLine)
 				if errW != nil {
 					os.Stderr.Write([]byte("Write string line to out fail\n"))
 					os.Exit(0)
