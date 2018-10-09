@@ -206,6 +206,11 @@ func outputCurrent(reader *bufio.Reader, args *selpg_args) {
 	// }
 
 	checkPageNum(args, pageCtr)
+
+	if err := cmd.Wait(); err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
 }
 
 // 输出到指定目的地	
