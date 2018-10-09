@@ -1,12 +1,12 @@
 package main
 
 import (
-//	"fmt"
+	"fmt"
 	"io"
 //	"io/ioutil"
 	"bufio"
 	"os"
-//	"os/exec"
+	"os/exec"
 	"math"
 	"github.com/spf13/pflag"
 )
@@ -107,70 +107,161 @@ func outputCurrent(reader *bufio.Reader, args *selpg_args) {
 	writer := bufio.NewWriter(os.Stdout)
 	lineCtr := 0
 	pageCtr := 1
+
+	endSign := '\n'
 	if args.pageType == true {
-		// -f page type
-		for {
-			char, errR := reader.ReadByte()
-			if errR != nil {
-				if errR == io.EOF {
-					break
-				} else {
-					os.Stderr.Write([]byte("Read byte from reader fail\n"))
-					os.Exit(0)
-				}
-			}
-			if pageCtr >= args.startPage && pageCtr <= args.endPage {
-				errW := writer.WriteByte(char)
-				if errW != nil {
-					os.Stderr.Write([]byte("Write byte to out fail\n"))
-					os.Exit(0)
-				}
+		endSign = '\f'
+	}
+
+	for{
+		strLine, errR := reader.ReadBytes(byte(endSign))
+		if errR != nil {
+			if errR == io.EOF {
 				writer.Flush()
-			}
-			if char == '\f' {
-				pageCtr++
+				break
+			} else {
+				os.Stderr.Write([]byte("Read bytes from reader fail\n"))
+				os.Exit(0)
 			}
 		}
-	} else {
-		// -lNumber page type
-		// page len is 72 or the number in -lNumber
-		for{
-			strLine, errR := reader.ReadBytes('\n')
-			if errR != nil {
-				if errR == io.EOF {
-					break
-				} else {
-					os.Stderr.Write([]byte("Read bytes from reader fail\n"))
-					os.Exit(0)
-				}
-			}
 
+		if args.pageType == true {
+			pageCtr++
+		} else {
 			lineCtr++
+		}
 
-			if pageCtr >= args.startPage && pageCtr <= args.endPage {
-				_, errW := writer.Write(strLine)
-				if errW != nil {
-					os.Stderr.Write([]byte("Write bytes to out fail\n"))
-					os.Exit(0)
-				}
+		if pageCtr >= args.startPage && pageCtr <= args.endPage {
+			_, errW := writer.Write(strLine)
+			if errW != nil {
+				os.Stderr.Write([]byte("Write bytes to out fail\n"))
+				os.Exit(0)
 			}
-			if lineCtr == args.pageLen {
-				lineCtr = 0
-				pageCtr++ 
-				if pageCtr > args.endPage {
-					writer.Flush()
-					break
-				}
+		}
+		if args.pageType != true && lineCtr == args.pageLen {
+			lineCtr = 0
+			pageCtr++ 
+			if pageCtr > args.endPage {
+				writer.Flush()
+				break
 			}
 		}
 	}
+
+	// if args.pageType == true {
+	// 	// -f page type
+	// 	for {
+	// 		char, errR := reader.ReadByte()
+	// 		if errR != nil {
+	// 			if errR == io.EOF {
+	// 				break
+	// 			} else {
+	// 				os.Stderr.Write([]byte("Read byte from reader fail\n"))
+	// 				os.Exit(0)
+	// 			}
+	// 		}
+	// 		if pageCtr >= args.startPage && pageCtr <= args.endPage {
+	// 			errW := writer.WriteByte(char)
+	// 			if errW != nil {
+	// 				os.Stderr.Write([]byte("Write byte to out fail\n"))
+	// 				os.Exit(0)
+	// 			}
+	// 			writer.Flush()
+	// 		}
+	// 		if char == '\f' {
+	// 			pageCtr++
+	// 		}
+	// 	}
+	// } else {
+	// 	// -lNumber page type
+	// 	// page len is 72 or the number in -lNumber
+	// 	for{
+	// 		strLine, errR := reader.ReadBytes('\n')
+	// 		if errR != nil {
+	// 			if errR == io.EOF {
+	// 				break
+	// 			} else {
+	// 				os.Stderr.Write([]byte("Read bytes from reader fail\n"))
+	// 				os.Exit(0)
+	// 			}
+	// 		}
+
+	// 		lineCtr++
+
+	// 		if pageCtr >= args.startPage && pageCtr <= args.endPage {
+	// 			_, errW := writer.Write(strLine)
+	// 			if errW != nil {
+	// 				os.Stderr.Write([]byte("Write bytes to out fail\n"))
+	// 				os.Exit(0)
+	// 			}
+	// 		}
+	// 		if lineCtr == args.pageLen {
+	// 			lineCtr = 0
+	// 			pageCtr++ 
+	// 			if pageCtr > args.endPage {
+	// 				writer.Flush()
+	// 				break
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	checkPageNum(args, pageCtr)
 }
 
 // 输出到指定目的地	
 func outputToDest(reader *bufio.Reader, args *selpg_args) {
-	
+	cmd := exec.Command("./" + args.outDestination)
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+
+	lineCtr := 0
+	pageCtr := 1
+
+	endSign := '\n'	
+	if args.pageType == true {
+		endSign = '\f'
+	} 
+
+	for {
+		strLine, errR := reader.ReadBytes(byte(endSign))
+		if errR != nil {
+			if errR == io.EOF {
+				break
+			} else {
+				os.Stderr.Write([]byte("Read bytes from reader fail\n"))
+				os.Exit(0)
+			}
+		}
+
+		if args.pageType == true {
+			pageCtr++
+		} else {
+			lineCtr++
+		}
+
+		if pageCtr >= args.startPage && pageCtr <= args.endPage {
+			_, errW := stdin.Write(strLine)
+			if errW != nil {
+				os.Stderr.Write([]byte("Write bytes to out fail\n"))
+				os.Exit(0)
+			}
+		}
+		if args.pageType != true && lineCtr == args.pageLen {
+			lineCtr = 0
+			pageCtr++ 
+			stdin.Write([]byte("\f"))		
+			if pageCtr > args.endPage {
+				break
+			}
+		}
+	}
+
+	stdin.Close()
+	checkPageNum(args, pageCtr)
 }
 
 // 检查开始页号与结束页号的合理性
