@@ -21,6 +21,7 @@ type selpg_args struct {
 }
 
 func main() {
+
 	var args selpg_args
 
 	// 定义并且获取参数
@@ -35,11 +36,11 @@ func main() {
 
 // 定义并且获取参数
 func getArgs(args *selpg_args) {
-	pflag.IntVar(&(args.startPage), "s", -1, "start page")
-	pflag.IntVar(&(args.endPage), "e", -1, "end page")
-	pflag.IntVar(&(args.pageLen), "l", 72, "the length of page")
-	pflag.BoolVar(&(args.pageType), "f", false, "page type")
-	pflag.StringVar(&(args.outDestination), "d", "", "print destination")
+	pflag.IntVarP(&(args.startPage), "startPage", "s", -1, "start page")
+	pflag.IntVarP(&(args.endPage), "endPage", "e", -1, "end page")
+	pflag.IntVarP(&(args.pageLen), "pageLen", "l", 72, "the length of page")
+	pflag.BoolVarP(&(args.pageType), "pageType", "f", false, "page type")
+	pflag.StringVarP(&(args.outDestination), "outDestination", "d", "", "print destination")
 	pflag.Parse()
 
 	other := pflag.Args()	// 其余参数
@@ -104,7 +105,6 @@ func processInput(args *selpg_args) {
 // 输出到当前命令行
 func outputCurrent(reader *bufio.Reader, args *selpg_args) {
 	writer := bufio.NewWriter(os.Stdout)
-
 	lineCtr := 0
 	pageCtr := 1
 	if args.pageType == true {
@@ -125,7 +125,7 @@ func outputCurrent(reader *bufio.Reader, args *selpg_args) {
 					os.Stderr.Write([]byte("Write byte to out fail\n"))
 					os.Exit(0)
 				}
-				writer.Flush()	// 刷新缓存流，输出到控制台
+				writer.Flush()
 			}
 			if char == '\f' {
 				pageCtr++
@@ -135,12 +135,12 @@ func outputCurrent(reader *bufio.Reader, args *selpg_args) {
 		// -lNumber page type
 		// page len is 72 or the number in -lNumber
 		for{
-			strLine, errR := reader.ReadString('\n')
+			strLine, errR := reader.ReadBytes('\n')
 			if errR != nil {
 				if errR == io.EOF {
 					break
 				} else {
-					os.Stderr.Write([]byte("Read string line from reader fail\n"))
+					os.Stderr.Write([]byte("Read bytes from reader fail\n"))
 					os.Exit(0)
 				}
 			}
@@ -150,19 +150,20 @@ func outputCurrent(reader *bufio.Reader, args *selpg_args) {
 			if pageCtr >= args.startPage && pageCtr <= args.endPage {
 				_, errW := writer.Write(strLine)
 				if errW != nil {
-					os.Stderr.Write([]byte("Write string line to out fail\n"))
+					os.Stderr.Write([]byte("Write bytes to out fail\n"))
 					os.Exit(0)
 				}
-				writer.Flush()	// 刷新缓存流，输出到控制台
 			}
 			if lineCtr == args.pageLen {
 				lineCtr = 0
 				pageCtr++ 
+				if pageCtr > args.endPage {
+					writer.Flush()
+					break
+				}
 			}
 		}
 	}
-
-	writer.Close()
 
 	checkPageNum(args, pageCtr)
 }
@@ -176,12 +177,12 @@ func outputToDest(reader *bufio.Reader, args *selpg_args) {
 func checkPageNum(args *selpg_args, pageCtr int) {
 
 	if pageCtr < args.startPage {
-		os.Stderr.writer([]byte("Start page is bigger than the total page num"))
-		os.exit(0)
+		os.Stderr.Write([]byte("Start page is bigger than the total page num\n"))
+		os.Exit(0)
 	}
 
-	if pageCtr > args.endPage {
-		os.Stderr.writer([]byte("End page is bigger than the total page num"))
-		os.exit(0)
+	if pageCtr < args.endPage {
+		os.Stderr.Write([]byte("End page is bigger than the total page num\n"))
+		os.Exit(0)
 	}
 }
