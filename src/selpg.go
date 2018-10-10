@@ -159,12 +159,6 @@ func outputToDest(reader *bufio.Reader, args *selpg_args) {
 		os.Exit(0)
 	}
 
-	startErr := cmd.Start();
-	if startErr != nil {
-		fmt.Println(startErr)
-		os.Exit(0)
-	}
-
 	lineCtr := 0
 	pageCtr := 1
 
@@ -208,6 +202,12 @@ func outputToDest(reader *bufio.Reader, args *selpg_args) {
 	}
 
 	stdin.Close()
+
+	startErr := cmd.Start();
+	if startErr != nil {
+		fmt.Println(startErr)
+		os.Exit(0)
+	}
 
 	if err := cmd.Wait(); err != nil {
 		fmt.Println(err)
