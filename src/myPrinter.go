@@ -3,19 +3,33 @@
 package main
 
 import (
-    "bufio"
-    "fmt"
-    "log"
     "os"
+    "io"
+    "bufio"
 )
 
 func main() {
-    fileInfo, _ := os.Stdin.Stat()
-    if (fileInfo.Mode() & os.ModeNamedPipe) != os.ModeNamedPipe {
-        log.Fatal("The command is intended to work with pipes.")
+	var reader *bufio.Reader
+    file,err := os.Open("../data/printerTxt.txt")
+    if err != nil {
+    	panic(err)
     }
-    s := bufio.NewScanner(os.Stdin)
-    for s.Scan() {
-        fmt.Println(s.Text())
+
+    for {
+    	line, errR := reader.ReadBytes('\n')
+		if errR != nil {
+			if errR == io.EOF {
+				break
+			} else {
+				os.Stderr.Write([]byte("Read bytes from reader fail\n"))
+				os.Exit(0)
+			}
+		}
+		_, errW := file.Write(line)
+		if errW != nil {
+			os.Stderr.Write([]byte("Write bytes to file fail\n"))
+			os.Exit(0)
+		}
     }
+    file.Close()
 }

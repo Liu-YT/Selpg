@@ -146,65 +146,6 @@ func outputCurrent(reader *bufio.Reader, args *selpg_args) {
 			}
 		}
 	}
-
-	// if args.pageType == true {
-	// 	// -f page type
-	// 	for {
-	// 		char, errR := reader.ReadByte()
-	// 		if errR != nil {
-	// 			if errR == io.EOF {
-	// 				break
-	// 			} else {
-	// 				os.Stderr.Write([]byte("Read byte from reader fail\n"))
-	// 				os.Exit(0)
-	// 			}
-	// 		}
-	// 		if pageCtr >= args.startPage && pageCtr <= args.endPage {
-	// 			errW := writer.WriteByte(char)
-	// 			if errW != nil {
-	// 				os.Stderr.Write([]byte("Write byte to out fail\n"))
-	// 				os.Exit(0)
-	// 			}
-	// 			writer.Flush()
-	// 		}
-	// 		if char == '\f' {
-	// 			pageCtr++
-	// 		}
-	// 	}
-	// } else {
-	// 	// -lNumber page type
-	// 	// page len is 72 or the number in -lNumber
-	// 	for{
-	// 		strLine, errR := reader.ReadBytes('\n')
-	// 		if errR != nil {
-	// 			if errR == io.EOF {
-	// 				break
-	// 			} else {
-	// 				os.Stderr.Write([]byte("Read bytes from reader fail\n"))
-	// 				os.Exit(0)
-	// 			}
-	// 		}
-
-	// 		lineCtr++
-
-	// 		if pageCtr >= args.startPage && pageCtr <= args.endPage {
-	// 			_, errW := writer.Write(strLine)
-	// 			if errW != nil {
-	// 				os.Stderr.Write([]byte("Write bytes to out fail\n"))
-	// 				os.Exit(0)
-	// 			}
-	// 		}
-	// 		if lineCtr == args.pageLen {
-	// 			lineCtr = 0
-	// 			pageCtr++ 
-	// 			if pageCtr > args.endPage {
-	// 				writer.Flush()
-	// 				break
-	// 			}
-	// 		}
-	// 	}
-	// }
-
 	checkPageNum(args, pageCtr)
 }
 
@@ -215,6 +156,7 @@ func outputToDest(reader *bufio.Reader, args *selpg_args) {
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		fmt.Println(err)
+		os.Exit(0)
 	}
 
 	startErr := cmd.Start();
