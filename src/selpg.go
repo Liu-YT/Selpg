@@ -211,11 +211,17 @@ func outputCurrent(reader *bufio.Reader, args *selpg_args) {
 // 输出到指定目的地	
 func outputToDest(reader *bufio.Reader, args *selpg_args) {
 	cmd := exec.Command("./" + args.outDestination)
+
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		fmt.Println(err)
 	}
 
+	startErr := cmd.Start();
+	if startErr != nil {
+		fmt.Println(startErr)
+		os.Exit(0)
+	}
 
 	lineCtr := 0
 	pageCtr := 1
