@@ -1,5 +1,3 @@
-
-## Golang开发Linux命令行实用程序 -  selpg
 <!-- TOC -->
 
 - [Golang开发Linux命令行实用程序 - selpg](#golang开发linux命令行实用程序---selpg)
@@ -8,18 +6,21 @@
     - [2.1 设计思路](#21-设计思路)
     - [2.2 功能模块划分与实现](#22-功能模块划分与实现)
   - [3 测试](#3-测试)
+  - [4 My selpg使用说明](#4-my-selpg使用说明)
     - [4.1 文件结构](#41-文件结构)
     - [4.2 运行](#42-运行)
   - [5 参考文献](#5-参考文献)
 
 <!-- /TOC -->
+
+## Golang开发Linux命令行实用程序 -  selpg
 ### 1. 介绍
 
 * Linux命令行使用程序 - `selpg`，这个名称代表`SELect PaGes`。selpg允许用户指定从输入文本抽取的页的范围，这些输入文本可以来自文件或另一个进程。
 * 关于selpg的详细介绍，参照**[开发Linux命令行实用程序](https://www.ibm.com/developerworks/cn/linux/shell/clutil/index.html)**
 * 实现`slepg`代码
   * [我的 - Golang实现](https://github.com/Liu-YT/selpg)
-    * [使用说明](#use)
+    * [使用说明](#4-my-selpg使用说明)
   * [官方 - C语言实现](https://www.ibm.com/developerworks/cn/linux/shell/clutil/selpg.c)
 
 ### 2. 设计与实现
@@ -262,7 +263,7 @@
 11. 测试`-dXXX`
   ![测试11](./images/test_D.png)
 
-<h3 id = "use"> 4 My selpg使用说明 </h3>
+### 4 My selpg使用说明
 
 #### 4.1 文件结构
   * `src` -- 存储源文件
