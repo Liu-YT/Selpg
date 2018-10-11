@@ -134,6 +134,7 @@
 
         command返回cmd结构来执行带有相关参数的命令，它仅仅设定cmd结构中的Path和Args参数，如果name参数中不包含路径分隔符，command使用LookPath来解决路径问题，否则的话就直接使用name；Args直接跟在command命令之后，所以在Args中不许要添加命令。我们用该命令创建一个命令对象，参数为子进程路径和子进程参数（可选）　
         ```go
+        // 指定运行的程序，实现模拟的打印机
         cmd := exec.Command("./" + args.outDestination)
         ```
 
