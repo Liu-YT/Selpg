@@ -131,7 +131,7 @@
 
         `ReadBytes` 在 `reader`中查找`delim `并读出 `delim` 及其之前的所有数据。如果 `ReadBytes` 在找到 `delim` 之前遇到错误，则返回遇到错误之前的所有数据，同时返回遇到的错误（通常是 `io.EOF`）。 只有当 `ReadBytes` 找不到 `delim `时，`err` 才不为 `nil`
 
-  * **`os/exec包介绍与使用` **
+  * **`os/exec包介绍与使用`**
 
     * `os/exec`包执行外部命令。它包装了`os.StartProcess`函数以便更容易的修正输入和输出，使用管道连接I/O，以及作其它的一些调整。 
       * `func Command(name string, arg ...string) *Cmd`
@@ -149,7 +149,7 @@
   
         StdinPipe返回一个连接到command标准输入的管道pipe。我们可以通过在此处写入传输信息，然后作为子进程的标准输入。
 
-    * 对于`-dXXX`的实现，创建一个子进程，让其模拟打印机，使用管道将数据传输给子进程，子进程打印出来。
+    * 对于`-dXXX`的实现，创建一个子进程，让其模拟打印机，使用管道将数据传输给子进程，子进程读取管道内传输的信息并且打印出来。
 
   * 处理流程
 
@@ -187,59 +187,50 @@
       }
       ```
 
+      ```go
+      // 输出到当前命令行
+      func outputCurrent(reader *bufio.Reader, args *selpg_args);
+
+      // 输出到指定目的地
+      func outputToDest(reader *bufio.Reader, args *selpg_args);
+      ```
+
+  * 具体代码参见[Github项目](https://github.com/Liu-YT/selpg#use)
 
 
 ### 3 测试
 
-#### 3.1 第一类测试
-
 1. `$ selpg -s1 -e1 input_file`
-
-
+  ![测试1](./images/1.png)
 2. `$ selpg -s1 -e1 < input_file`
+  ![测试2](./images/2.png)
+3. `$ other_command | selpg -s1 -e1`
+  ![测试3](./images/3.png)
+4. `$ selpg -s1 -e1 input_file >output_file`
+  ![测试4](./images/4.png)
+5. `$ selpg -s1 -e10 input_file 2>error_file `
+  ![测试5](./images/5.png)
+6. `$ selpg -s1 -e10 input_file >output_file 2>error_file`
+  ![测试6](./images/6.png)
+7. `$ selpg -s1 -e1 input_file | other_command`
+  ![测试7](./images/7.png)
+8. `$ selpg -s1 -e11 input_file 2>error_file | other_command`
+  ![测试8](./images/8.png)
+9.  `$ selpg -s1 -e3 -l4 input_file`''
+  ![测试9](./images/9.png)
+10. `$ selpg -s1 -e3 -f input_file`
+  ![测试10](./images/10.png)
 
+11. 测试`-dXXX`
+  ![测试11](./images/test_D.png)
 
-3. `$ other_command | selpg -s10 -e20`
-
-
-4. `$ selpg -s10 -e20 input_file >output_file`
-
-
-5. `$ selpg -s10 -e20 input_file 2>error_file `
-
-
-6. `$ selpg -s10 -e20 input_file >output_file 2>error_file`
-
-
-7. `$ selpg -s10 -e20 input_file >output_file 2>/dev/null`
-
-
-8. `$ selpg -s10 -e20 input_file >/dev/null`
-
-
-9.  `$ selpg -s10 -e20 input_file | other_command`
-
-
-10. `$ selpg -s10 -e20 input_file 2>error_file | other_command`
-
-
-
-#### 3.2 第二类测试
-
-1. `$ selpg -s10 -e20 -l66 input_file`''
-
-
-2. `$ selpg -s10 -e20 -f input_file`
-
-
-3. 测试`-dXXX`
-
-
-<h3 id = "use"> 4 使用说明 </h3>
+<h3 id = "use"> 4 My selpg使用说明 </h3>
 
 #### 4.1 文件结构
   * `src` -- 存储源文件
   * `data` --  存储测试数据以及模拟的打印机打印数据
+    * `in.txt` -- 数据没有分页符(`\f`)，但是内容比较多
+    * `input.txt` -- 数据中有分页符(`\f`)，但是比较少
 
 #### 4.2 运行
   * 编译模拟打印机程序 -- `myPrinter.go`
@@ -249,7 +240,7 @@
 
     `go build selpg.go`
 
-  * 查看参数
+  * 查看`selpg`命令使用
 
     `selpg -help`
 
