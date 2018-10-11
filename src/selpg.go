@@ -24,7 +24,7 @@ func main() {
 
 	var args selpg_args
 
-	// 定义并且获取参数
+	// 解析获取参数
 	getArgs(&args)
 
 	// 检查参数合法性
@@ -34,7 +34,7 @@ func main() {
 	processInput(&args)
 }
 
-// 定义并且获取参数
+// 解析获取参数
 func getArgs(args *selpg_args) {
 	pflag.IntVarP(&(args.startPage), "startPage", "s", -1, "start page")
 	pflag.IntVarP(&(args.endPage), "endPage", "e", -1, "end page")
@@ -125,12 +125,6 @@ func outputCurrent(reader *bufio.Reader, args *selpg_args) {
 			}
 		}
 
-		if args.pageType == true {
-			pageCtr++
-		} else {
-			lineCtr++
-		}
-
 		if pageCtr >= args.startPage && pageCtr <= args.endPage {
 			_, errW := writer.Write(strLine)
 			if errW != nil {
@@ -138,6 +132,13 @@ func outputCurrent(reader *bufio.Reader, args *selpg_args) {
 				os.Exit(0)
 			}
 		}
+
+		if args.pageType == true {
+			pageCtr++
+		} else {
+			lineCtr++
+		}
+
 		if args.pageType != true && lineCtr == args.pageLen {
 			lineCtr = 0
 			pageCtr++
