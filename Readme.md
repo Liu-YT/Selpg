@@ -1,6 +1,18 @@
 
 ## Golang开发Linux命令行实用程序 -  selpg
+<!-- TOC -->
 
+- [Golang开发Linux命令行实用程序 - selpg](#golang开发linux命令行实用程序---selpg)
+  - [1. 介绍](#1-介绍)
+  - [2. 设计与实现](#2-设计与实现)
+    - [2.1 设计思路](#21-设计思路)
+    - [2.2 功能模块划分与实现](#22-功能模块划分与实现)
+  - [3 测试](#3-测试)
+    - [4.1 文件结构](#41-文件结构)
+    - [4.2 运行](#42-运行)
+  - [5 参考文献](#5-参考文献)
+
+<!-- /TOC -->
 ### 1. 介绍
 
 * Linux命令行使用程序 - `selpg`，这个名称代表`SELect PaGes`。selpg允许用户指定从输入文本抽取的页的范围，这些输入文本可以来自文件或另一个进程。
@@ -201,24 +213,50 @@
 ### 3 测试
 
 1. `$ selpg -s1 -e1 input_file`
+   
   ![测试1](./images/1.png)
+
 2. `$ selpg -s1 -e1 < input_file`
+   
   ![测试2](./images/2.png)
+
 3. `$ other_command | selpg -s1 -e1`
+   
   ![测试3](./images/3.png)
+
 4. `$ selpg -s1 -e1 input_file >output_file`
+   
   ![测试4](./images/4.png)
+
 5. `$ selpg -s1 -e10 input_file 2>error_file `
+
+
   ![测试5](./images/5.png)
+
 6. `$ selpg -s1 -e10 input_file >output_file 2>error_file`
+
+
   ![测试6](./images/6.png)
+
 7. `$ selpg -s1 -e1 input_file | other_command`
+
   ![测试7](./images/7.png)
+
 8. `$ selpg -s1 -e11 input_file 2>error_file | other_command`
+
+
   ![测试8](./images/8.png)
+
+
 9.  `$ selpg -s1 -e3 -l4 input_file`''
+
+
   ![测试9](./images/9.png)
+
+
 10. `$ selpg -s1 -e3 -f input_file`
+
+
   ![测试10](./images/10.png)
 
 11. 测试`-dXXX`
