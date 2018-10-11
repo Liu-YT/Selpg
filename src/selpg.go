@@ -219,7 +219,7 @@ func outputToDest(reader *bufio.Reader, args *selpg_args) {
 	checkPageNum(args, pageCtr)
 }
 
-// 检查开始页号与结束页号的合理性
+// 检查开始页号与结束页号的实际合理性
 func checkPageNum(args *selpg_args, pageCtr int) {
 
 	if pageCtr < args.startPage {
