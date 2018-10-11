@@ -7,7 +7,7 @@
     - [2.2 功能模块划分与实现](#22-功能模块划分与实现)
   - [3 测试](#3-测试)
   - [4 My selpg使用说明](#4-my-selpg使用说明)
-    - [4.1 文件结构](#41-文件结构)
+    - [4.1 文件结构与说明](#41-文件结构与说明)
     - [4.2 运行](#42-运行)
   - [5 参考文献](#5-参考文献)
 
@@ -17,7 +17,7 @@
 ### 1. 介绍
 
 * Linux命令行使用程序 - `selpg`，这个名称代表`SELect PaGes`。selpg允许用户指定从输入文本抽取的页的范围，这些输入文本可以来自文件或另一个进程。
-* 关于selpg的详细介绍，参照**[开发Linux命令行实用程序](https://www.ibm.com/developerworks/cn/linux/shell/clutil/index.html)**
+* 关于selpg的详细介绍，参照[**开发Linux命令行实用程序**](https://www.ibm.com/developerworks/cn/linux/shell/clutil/index.html)
 * 实现`slepg`代码
   * [我的 - Golang实现](https://github.com/Liu-YT/selpg)
     * [使用说明](#4-my-selpg使用说明)
@@ -28,24 +28,6 @@
 #### 2.1 设计思路
 
 * 理解`selpg`命令的功能以及处理流程。
-
-  ```flow
-  st=>start: 命令输入
-  e=>end: 输出相应页并正常结束
-  op1=>operation: 参数解析
-  op2=>operation: 抛出错误，结束
-  op3=>operation: 执行命令
-  cond1=>condition: 参数是否合法
-  cond2=>condition: 读取操作正常并且指定页数合理
-
-  st->op1->cond1
-  cond1(yes)->op3
-  cond1(no)->op2
-  op3->cond2
-  cond2(no)->op2
-  cond2(yes)->e
-  ```
-
 * `selpg`命令涉及的基本操作
   * 文件的读写
   * 从终端获取输入以及在终端输出
@@ -261,11 +243,11 @@
   ![测试10](./images/10.png)
 
 11. 测试`-dXXX`
-  ![测试11](./images/test_D.png)
+  ![测试11](./images/test_d.png)
 
 ### 4 My selpg使用说明
 
-#### 4.1 文件结构
+#### 4.1 文件结构与说明
   * `src` -- 存储源文件
   * `data` --  存储测试数据以及模拟的打印机打印数据
     * `in.txt` -- 数据没有分页符(`\f`)，但是内容比较多
